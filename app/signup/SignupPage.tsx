@@ -2,7 +2,6 @@
 
 import React from "react";
 import Button from "./Button";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 
 const SignupPage = () => {
@@ -18,15 +17,20 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/v1/signup",
-        signupData
-      );
-      console.log(res.data);
-      if (res.data) {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(signupData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
         alert("Signup successful");
         setSignupData({ name: "", email: "", password: "" });
-        router.push("/");
+        router.replace("/");
+      } else {
+        alert(data.message || "Failed to signup");
       }
     } catch (error) {
       console.error(error);

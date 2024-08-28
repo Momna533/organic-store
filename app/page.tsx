@@ -33,7 +33,7 @@ const page = () => {
           <div>
             <Link href="/login">Login</Link>
             <Link href="/signup">Sign Up</Link>
-            <Link href="/logout">Logout</Link>
+            <Link href="/login">Logout</Link>
           </div>
         </div>
       </div>
