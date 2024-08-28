@@ -1,8 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import logo from "@/assets/organic-store-logo5.svg";
+import LogoutButton from "@/components/LogoutButton";
 const page = () => {
+  const token = localStorage.getItem("token");
+  // if (!token) {
+  //   return <h1>no token present</h1>;
+  // }
   return (
     <div>
       <div className="flex">
@@ -33,7 +40,7 @@ const page = () => {
           <div>
             <Link href="/login">Login</Link>
             <Link href="/signup">Sign Up</Link>
-            <Link href="/login">Logout</Link>
+            <LogoutButton />
           </div>
         </div>
       </div>

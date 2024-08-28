@@ -4,57 +4,45 @@ import React from "react";
 import Button from "./Button";
 import { useRouter } from "next/navigation";
 
-const SignupPage = () => {
+const LoginPage = () => {
   const router = useRouter();
-  const [signupData, setSignupData] = React.useState({
-    name: "",
+  const [loginData, setLoginData] = React.useState({
     email: "",
     password: "",
   });
   const handleChange = (e) => {
-    setSignupData({ ...signupData, [e.target.name]: e.target.value });
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/signup", {
+      const res = await fetch("http://localhost:3000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(signupData),
+        body: JSON.stringify(loginData),
       });
-
       const data = await res.json();
-
+      const token = data.token;
+      localStorage.setItem("token", token);
       if (res.ok) {
-        alert("Signup successful");
-        setSignupData({ name: "", email: "", password: "" });
-        router.replace("/login");
+        alert("Login successful");
+        setLoginData({ email: "", password: "" });
+        router.replace("/");
       } else {
-        alert(data.message || "Failed to signup");
+        alert(data.message || "Failed to login");
       }
     } catch (error) {
       console.error(error);
-      alert("Failed to signup");
+      alert("Failed to login");
     }
   };
   return (
     <form
-      //   action={handleSignup}
       onSubmit={handleSubmit}
       className="flex flex-col items-center justify-center border-transparent p-6 rounded-md shadow-2xl gap-4 w-96"
     >
-      <h1 className="text-2xl text-[#6a9739]">Signup</h1>
+      <h1 className="text-2xl text-[#6a9739]">Login</h1>
       <div className="flex flex-col gap-2 w-full">
-        <label className="flex flex-col gap-1 text-sm">
-          Name:
-          <input
-            type="text"
-            name="name"
-            className="border rounded-md p-[6px]"
-            onChange={handleChange}
-            value={signupData.name}
-          />
-        </label>
         <label className="flex flex-col gap-1 text-sm">
           Email:
           <input
@@ -62,7 +50,7 @@ const SignupPage = () => {
             name="email"
             className="border rounded-md p-[6px]"
             onChange={handleChange}
-            value={signupData.email}
+            value={loginData.email}
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -72,14 +60,14 @@ const SignupPage = () => {
             name="password"
             className="border rounded-md p-[6px]"
             onChange={handleChange}
-            value={signupData.password}
+            value={loginData.password}
           />
         </label>
       </div>
       <p className="w-full text-sm">
-        Already have an account?{" "}
-        <a href="/login" className="text-[#6a9739] capitalize">
-          login
+        Don`t have an account?{" "}
+        <a href="/signup" className="text-[#6a9739] capitalize">
+          signup
         </a>
       </p>
       <Button />
@@ -87,4 +75,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default LoginPage;
