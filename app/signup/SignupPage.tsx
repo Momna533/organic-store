@@ -1,21 +1,35 @@
 "use client";
 
-import React from "react";
+import React, { ChangeEvent, FormEvent } from "react";
 import Button from "./Button";
 import { useRouter } from "next/navigation";
+import { useFormStatus } from "react-dom";
 
-const SignupPage = () => {
+interface SignupData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+const SignupPage: React.FC = () => {
+  const { pending } = useFormStatus();
   const router = useRouter();
-  const [signupData, setSignupData] = React.useState({
+  const [signupData, setSignupData] = React.useState<SignupData>({
     name: "",
     email: "",
     password: "",
   });
-  const handleChange = (e) => {
-    setSignupData({ ...signupData, [e.target.name]: e.target.value });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSignupData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }));
   };
-  const handleSubmit = async (e) => {
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     try {
       const res = await fetch("/api/signup", {
         method: "POST",
@@ -23,27 +37,31 @@ const SignupPage = () => {
         body: JSON.stringify(signupData),
       });
 
-      const data = await res.json();
-
       if (res.ok) {
-        alert("Signup successful");
+        // alert("Signup successful");
         setSignupData({ name: "", email: "", password: "" });
         router.replace("/login");
       } else {
-        alert(data.message || "Failed to signup");
+        const data = await res.json();
+        console.log(data.message);
+
+        // alert(data.message || "Failed to signup");
       }
     } catch (error) {
-      console.error(error);
-      alert("Failed to signup");
+      console.error("Signup error:", error);
+      // alert("An error occurred during signup");
     }
   };
+
   return (
     <form
-      //   action={handleSignup}
       onSubmit={handleSubmit}
-      className="flex flex-col items-center justify-center border-transparent p-6 rounded-md shadow-2xl gap-4 w-96"
+      className="flex flex-col items-center justify-center p-6 border-transparent rounded-md shadow-2xl gap-4 w-96"
+      aria-labelledby="signup-form"
     >
-      <h1 className="text-2xl text-[#6a9739]">Signup</h1>
+      <h1 id="signup-form" className="text-2xl text-[#6a9739]">
+        Signup
+      </h1>
       <div className="flex flex-col gap-2 w-full">
         <label className="flex flex-col gap-1 text-sm">
           Name:
@@ -53,6 +71,7 @@ const SignupPage = () => {
             className="border rounded-md p-[6px]"
             onChange={handleChange}
             value={signupData.name}
+            aria-label="Name"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -63,6 +82,7 @@ const SignupPage = () => {
             className="border rounded-md p-[6px]"
             onChange={handleChange}
             value={signupData.email}
+            aria-label="Email"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
@@ -73,16 +93,23 @@ const SignupPage = () => {
             className="border rounded-md p-[6px]"
             onChange={handleChange}
             value={signupData.password}
+            aria-label="Password"
           />
         </label>
       </div>
       <p className="w-full text-sm">
         Already have an account?{" "}
         <a href="/login" className="text-[#6a9739] capitalize">
-          login
+          Login
         </a>
       </p>
-      <Button />
+      <button
+        type="submit"
+        disabled={pending}
+        className="bg-[#6a9739] hover:bg-[#8bc34a] transition-all text-[#ffffff] border-transparent rounded-md py-2 px-8 capitalize"
+      >
+        {pending ? "submitting" : "submit"}
+      </button>
     </form>
   );
 };

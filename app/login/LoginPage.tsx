@@ -3,39 +3,52 @@
 import React from "react";
 import Button from "./Button";
 import { useRouter } from "next/navigation";
+import { useFormStatus } from "react-dom";
+
+const setTokenCookie = (token) => {
+  document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; ${
+    process.env.NODE_ENV === "production" ? "SameSite=Strict; Secure" : ""
+  }`;
+};
 
 const LoginPage = () => {
+  const { pending } = useFormStatus();
   const router = useRouter();
   const [loginData, setLoginData] = React.useState({
     email: "",
     password: "",
   });
+
   const handleChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:3000/api/login", {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
       });
+
       const data = await res.json();
-      const token = data.token;
-      localStorage.setItem("token", token);
       if (res.ok) {
-        alert("Login successful");
+        setTokenCookie(data.token);
+        // alert("Login successful");
         setLoginData({ email: "", password: "" });
         router.replace("/");
       } else {
-        alert(data.message || "Failed to login");
+        console.log(data.message);
+
+        // alert(data.message || "Failed to login");
       }
     } catch (error) {
       console.error(error);
-      alert("Failed to login");
+      // alert("Failed to login");
     }
   };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -65,12 +78,18 @@ const LoginPage = () => {
         </label>
       </div>
       <p className="w-full text-sm">
-        Don`t have an account?{" "}
+        Don’t have an account?{" "}
         <a href="/signup" className="text-[#6a9739] capitalize">
-          signup
+          Sign up
         </a>
       </p>
-      <Button />
+      <button
+        type="submit"
+        disabled={pending}
+        className="bg-[#6a9739] hover:bg-[#8bc34a] transition-all text-[#ffffff] border-transparent rounded-md py-2 px-8 capitalize"
+      >
+        {pending ? "submitting" : "submit"}
+      </button>
     </form>
   );
 };
