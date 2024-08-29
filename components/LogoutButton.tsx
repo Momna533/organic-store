@@ -7,7 +7,12 @@ import React from "react";
 const LogoutButton: React.FC = () => {
   const router = useRouter();
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    const deleteCookie = (name: string) => {
+      document.cookie = `${name}=; path=/; max-age=0; ${
+        process.env.NODE_ENV === "production" ? "SameSite=Strict; Secure" : ""
+      }`;
+    };
+    deleteCookie("token");
     router.replace("/login");
   };
 
