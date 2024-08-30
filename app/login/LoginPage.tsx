@@ -35,17 +35,13 @@ const LoginPage = () => {
       const data = await res.json();
       if (res.ok) {
         setTokenCookie(data.token);
-        // alert("Login successful");
         setLoginData({ email: "", password: "" });
         router.replace("/");
       } else {
         console.log(data.message);
-
-        // alert(data.message || "Failed to login");
       }
     } catch (error) {
       console.error(error);
-      // alert("Failed to login");
     }
   };
 
