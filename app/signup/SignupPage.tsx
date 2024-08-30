@@ -38,18 +38,14 @@ const SignupPage: React.FC = () => {
       });
 
       if (res.ok) {
-        // alert("Signup successful");
         setSignupData({ name: "", email: "", password: "" });
         router.replace("/login");
       } else {
         const data = await res.json();
         console.log(data.message);
-
-        // alert(data.message || "Failed to signup");
       }
     } catch (error) {
       console.error("Signup error:", error);
-      // alert("An error occurred during signup");
     }
   };
 
