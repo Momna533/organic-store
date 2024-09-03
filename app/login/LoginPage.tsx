@@ -1,15 +1,8 @@
 "use client";
 
 import React from "react";
-import Button from "./Button";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
-
-const setTokenCookie = (token) => {
-  document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; ${
-    process.env.NODE_ENV === "production" ? "SameSite=Strict; Secure" : ""
-  }`;
-};
 
 const LoginPage = () => {
   const { pending } = useFormStatus();
@@ -34,7 +27,6 @@ const LoginPage = () => {
 
       const data = await res.json();
       if (res.ok) {
-        setTokenCookie(data.token);
         setLoginData({ email: "", password: "" });
         router.replace("/");
       } else {
